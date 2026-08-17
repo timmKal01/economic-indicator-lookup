@@ -1,0 +1,29 @@
+{
+    "title": "Economic Indicator Lookup Input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "countries": {
+            "title": "Countries",
+            "type": "array",
+            "editor": "stringList",
+            "description": "One or more ISO 3-letter country codes, e.g. \"USA\", \"GBR\", \"JPN\", \"IND\"."
+        },
+        "indicatorCode": {
+            "title": "Indicator code",
+            "type": "string",
+            "editor": "textfield",
+            "description": "A World Bank indicator code. Common ones: NY.GDP.MKTP.CD (GDP, current US$), NY.GDP.MKTP.KD.ZG (GDP growth %), FP.CPI.TOTL.ZG (inflation %), SL.UEM.TOTL.ZS (unemployment %), SP.POP.TOTL (population), SP.DYN.LE00.IN (life expectancy). Browse more at data.worldbank.org/indicator."
+        },
+        "mostRecentYears": {
+            "title": "Most recent years",
+            "type": "integer",
+            "editor": "number",
+            "description": "How many of the most recent years (per country) to return.",
+            "default": 5,
+            "minimum": 1,
+            "maximum": 20
+        }
+    },
+    "required": ["countries", "indicatorCode"]
+}
