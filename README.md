@@ -56,3 +56,7 @@ commercial use with attribution.
 
 Billed per **lookup** (one run), not per value returned — one charge
 whether you request 1 country/1 year or 20 countries/20 years.
+
+## Related products
+
+- [Global Health Indicator Lookup](https://github.com/timmKal01/global-health-indicator-lookup) — the WHO health-data counterpart to this World Bank economic data
