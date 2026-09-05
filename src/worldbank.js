@@ -1,4 +1,31 @@
 const BASE_URL = 'https://api.worldbank.org/v2/country';
+const REQUEST_TIMEOUT_MS = 30_000;
+
+/** The World Bank API is occasionally slow or 429s/5xxs under load — retry with backoff
+ *  rather than ever treating a throttle or timeout as "no data." */
+async function fetchWithRetry(url, { retries = 4, baseDelayMs = 1500 } = {}) {
+    let lastErr;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        try {
+            const res = await fetch(url, { headers: { Connection: 'close' }, signal: controller.signal });
+            if (res.ok) return res;
+            if (![429, 500, 502, 503, 504].includes(res.status)) {
+                throw new Error(`World Bank API request failed: ${res.status} ${res.statusText}`);
+            }
+            lastErr = new Error(`World Bank API returned ${res.status}`);
+        } catch (err) {
+            lastErr = err.name === 'AbortError' ? new Error('World Bank API request timed out') : err;
+        } finally {
+            clearTimeout(timeout);
+        }
+        if (attempt < retries) {
+            await new Promise((r) => setTimeout(r, baseDelayMs * 2 ** attempt));
+        }
+    }
+    throw lastErr;
+}
 
 export async function fetchIndicator({ countries, indicatorCode, mostRecentYears }) {
     const countryPath = countries.map((c) => c.trim().toUpperCase()).join(';');
@@ -14,10 +41,7 @@ export async function fetchIndicator({ countries, indicatorCode, mostRecentYears
     const startYear = currentYear - mostRecentYears - 5;
     url.searchParams.set('date', `${startYear}:${currentYear}`);
 
-    const res = await fetch(url, { headers: { Connection: 'close' } });
-    if (!res.ok) {
-        throw new Error(`World Bank API request failed: ${res.status} ${res.statusText}`);
-    }
+    const res = await fetchWithRetry(url);
     const body = await res.json();
 
     // On a bad country or indicator code the API still returns 200, but with a single-element
@@ -34,19 +58,23 @@ export async function fetchIndicator({ countries, indicatorCode, mostRecentYears
     const seenPerCountry = {};
     const results = [];
     for (const row of rows) {
-        if (row.value === null) continue; // skip years with no reported data
-        const code = row.countryiso3code;
-        seenPerCountry[code] = (seenPerCountry[code] ?? 0) + 1;
-        if (seenPerCountry[code] > mostRecentYears) continue;
+        try {
+            if (row.value === null) continue; // skip years with no reported data
+            const code = row.countryiso3code;
+            seenPerCountry[code] = (seenPerCountry[code] ?? 0) + 1;
+            if (seenPerCountry[code] > mostRecentYears) continue;
 
-        results.push({
-            countryCode: code,
-            countryName: row.country?.value ?? null,
-            indicatorCode: row.indicator?.id ?? indicatorCode,
-            indicatorName: row.indicator?.value ?? null,
-            year: row.date,
-            value: row.value,
-        });
+            results.push({
+                countryCode: code,
+                countryName: row.country?.value ?? null,
+                indicatorCode: row.indicator?.id ?? indicatorCode,
+                indicatorName: row.indicator?.value ?? null,
+                year: row.date,
+                value: row.value,
+            });
+        } catch (err) {
+            // Skip a malformed row rather than losing the whole indicator lookup.
+        }
     }
     return results;
 }
