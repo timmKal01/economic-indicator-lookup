@@ -7,13 +7,17 @@
             "title": "Countries",
             "type": "array",
             "editor": "stringList",
-            "description": "One or more ISO 3-letter country codes, e.g. \"USA\", \"GBR\", \"JPN\", \"IND\"."
+            "description": "One or more ISO 3-letter country codes, e.g. \"USA\", \"GBR\", \"JPN\", \"IND\".",
+            "prefill": ["USA"],
+            "default": ["USA"]
         },
         "indicatorCode": {
             "title": "Indicator code",
             "type": "string",
             "editor": "textfield",
-            "description": "A World Bank indicator code. Common ones: NY.GDP.MKTP.CD (GDP, current US$), NY.GDP.MKTP.KD.ZG (GDP growth %), FP.CPI.TOTL.ZG (inflation %), SL.UEM.TOTL.ZS (unemployment %), SP.POP.TOTL (population), SP.DYN.LE00.IN (life expectancy). Browse more at data.worldbank.org/indicator."
+            "description": "A World Bank indicator code. Common ones: NY.GDP.MKTP.CD (GDP, current US$), NY.GDP.MKTP.KD.ZG (GDP growth %), FP.CPI.TOTL.ZG (inflation %), SL.UEM.TOTL.ZS (unemployment %), SP.POP.TOTL (population), SP.DYN.LE00.IN (life expectancy). Browse more at data.worldbank.org/indicator.",
+            "prefill": "NY.GDP.MKTP.CD",
+            "default": "NY.GDP.MKTP.CD"
         },
         "mostRecentYears": {
             "title": "Most recent years",
