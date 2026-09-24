@@ -1,7 +1,7 @@
 {
     "actorSpecification": 1,
     "name": "economic-indicator-lookup",
-    "title": "Economic Indicator Lookup — World Bank Data",
+    "title": "World Bank Data Lookup: GDP, Inflation & More",
     "description": "Look up any World Bank economic indicator (GDP, inflation, unemployment, population, and hundreds more) for one or more countries over recent years via the official World Bank Open Data API. For market research, macro analysis, and country-risk teams.",
     "version": "0.1",
     "meta": {
