@@ -59,4 +59,4 @@ whether you request 1 country/1 year or 20 countries/20 years.
 
 ## Related products
 
-- [Global Health Indicator Lookup](https://github.com/timmKal01/global-health-indicator-lookup) — the WHO health-data counterpart to this World Bank economic data
+- [WHO Health Data Lookup by Country](https://apify.com/m_ctim/global-health-indicator-lookup): the WHO health-data counterpart to this World Bank economic data
